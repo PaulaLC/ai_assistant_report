@@ -1,0 +1,380 @@
+/* =========================
+   Global layout
+   ========================= */
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #1d1d1f;
+  background: #ffffff;
+}
+
+/* Remove default Quarto constraints */
+.page-columns {
+  max-width: none;
+  padding: 0;
+}
+
+a:hover {
+  color: #635bff;
+}
+
+/* =========================
+   Banner
+   ========================= */
+
+.quarto-title-block .quarto-title-banner {
+  position: relative;
+  background-size: 100px;
+  background: -webkit-linear-gradient(bottom left, #ffcb57, #635bff); 
+  background: -moz-linear-gradient(bottom left, #ffcb57, #635bff);
+  background: linear-gradient(90deg,#ffcb57, #ff5996 50%,#635bff);
+  background-position-x: 50%;
+  background-position-y: 70%;
+  background-repeat: no-repeat;
+  height: 500px;
+  padding-top: 120px;
+}
+
+
+.quarto-title-block .quarto-title {
+  position: relative; /* title becomes positioning context */
+  display: inline-block; /* shrink to title width */
+}
+
+.quarto-title-block .quarto-title::after {
+  content: "";
+  position: absolute;
+  top: 0;       /* start at top of title */
+  left: 0;      /* start at left of title */
+  width: 100px;  /* cover the full width of the title */
+  height: 100px; /* cover the full height of the title */
+  background-size: contain; /* scale image to fit the title box */
+  pointer-events: none; /* title is still clickable/selectable */
+}
+
+.quarto-title h1 {
+  font-size: 5rem;
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.lead {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+/* =========================
+   Section system
+   ========================= */
+
+section {
+  margin-bottom: 50px !important;
+}
+
+.section-alt {
+  margin-top: 150px !important;
+  background-color: #f5f5f7;
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 48px;
+  border-radius: 20px;
+}
+
+#intro {
+  margin: 50px 100px 200px 100px;
+}
+
+/* =========================
+   Typography
+   ========================= */
+
+h1 {
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  border: none;
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 0px;
+  border: none;
+}
+
+h3 {
+  font-size: 22px;
+  color: #929292;
+  margin-bottom: 30px;
+  margin-top: 0px;
+}
+
+h4 {
+  font-size: 1.7rem;
+  font-weight: bold;
+  margin-top: 80px;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+p {
+  font-size: 17px;
+  line-height: 1.55;
+  color: #1d1d1f;
+}
+
+#intro p {
+  font-size: 22px;
+  color: #1d1d1f;
+  font-weight: bold;
+  text-align: left;
+}
+
+#intro span {
+  color: #635bff;
+}
+
+#intro .column p {
+  font-size: 20px;
+  color: #929292;
+  font-weight: bold;
+  text-align: justify;
+  padding-right: 15px;
+}
+
+
+/* =========================
+   Metrics (Apple-style)
+   ========================= */
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 56px;
+  margin-top: 64px;
+}
+
+.metric-value {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.metric-label {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.metric-note {
+  font-size: 14px;
+  color: #6e6e73;
+  line-height: 1.4;
+}
+
+/* =========================
+   Figures / plots
+   ========================= */
+
+.figure-block {
+  margin-top: 48px;
+  max-width: 900px;
+}
+
+/* =========================
+   Buttons
+   ========================= */
+
+.btn-primary {
+  display: inline-block;
+  margin-top: 64px;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 999px;
+  background: #black;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+
+
+
+/* =============
+   Split section 
+   ============== */
+
+.split-section {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.split-tabs .nav-tabs {
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.split-tabs .nav-tabs .nav-link {
+  border: none;
+  background: none;
+  font-size: 20px;
+  font-weight: 500;
+  color: #6e6e73;
+  padding: 8px 0;
+}
+
+.split-tabs .nav-tabs .nav-link.active {
+  color: #1d1d1f;
+}
+
+.split-tabs .tab-content {
+  padding: 0;
+}
+
+
+/* =============
+   Panel Tabs section 
+   ============== */
+
+/* Center the tabset */
+.panel-tabset {
+  border: none; /* remove border */
+  background: transparent; /* remove background if needed */
+}
+
+/* Style individual tabs */
+.panel-tabset .tab {
+  border: none; /* remove borders from tabs */
+  color: #f5f5f7; /* inactive tabs */
+  background: transparent; /* remove any background color */
+  padding: 0.5em 1em; /* optional spacing */
+  font-weight: normal;
+  cursor: pointer;
+}
+
+/* Active tab */
+.panel-tabset .tab.active {
+  color: black; /* active tab text black */
+  background: transparent; /* no active background */
+  font-weight: bold; /* optional emphasis */
+  border: none; /* ensure no border */
+}
+
+/* Remove any default focus/outline styles if desired */
+.panel-tabset .tab:focus {
+  outline: none;
+}
+
+/* =============
+   Cards
+   ============== */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 62px;
+}
+
+.card {
+  background: #FFFFFF;
+  border: none;
+  border-radius: 10px;
+  padding: 48px 58px 102px 28px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 60px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #cccccc;
+}
+
+.card h3 {
+  margin: 0 0 12px 0;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #111111;
+}
+
+.card p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #1f1f1f;
+}
+
+/* Optional: subtle hover for interactive contexts */
+.card:hover {
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+#speed h2, #speed h3 {
+  text-align: center;
+}
+
+#speed p {
+  text-align: center;
+  padding-right: 150px;
+  padding-left: 150px;
+  padding-bottom: 50px;
+}
+
+
+.column {
+  padding-right: 20px;
+}
+
+.ds-work {
+  padding-top: 150px;
+}
+
+.delivery {
+  padding-top: 190px;
+  margin-bottom: 100px;
+}
+
+.scatter {
+  padding-top: 200px;
+}
+
+.quarto-figure {
+  margin-bottom: 0;
+}
+
+.report-footer {
+  padding-top: 1rem;
+  font-size: 0.75rem;
+  color: #cccccc;
+  margin-bottom: 50px;
+}
+
+.footer-content {
+  gap: 0.5rem;
+  text-align: right;
+}
+
+.footer-separator {
+  opacity: 0.6;
+}
+
+#closing {
+  text-align: center;
+}
+
+#closing p {
+  font-size: 1.1rem;
+}

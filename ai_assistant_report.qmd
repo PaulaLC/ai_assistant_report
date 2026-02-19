@@ -1,0 +1,540 @@
+---
+title: "AI Assistant Impact"
+subtitle: "How AI reshaped productivity, delivery speed, and the role of Data Science"
+page-layout: full
+format:
+  html:
+    anchor-sections: false
+    css: report_style.css
+    mainfont: 'Helvetica Neue'
+    linkcolor: '#9966ff'
+    include-after-body: footer.html
+    toc: false
+execute:
+  echo: false
+  warning: false
+  code-fold: true
+title-block-banner: true
+---
+
+```{r style}
+library(tidyverse)
+library(ggalluvial)
+library(patchwork)
+
+# Dataviz set up
+# Create a vector of report colors (based on the website colors)
+report_colors <- c("#635bff", "#ff5996", "#ffcb57", "#90e0ff", "#a960ee",  "#ff333d")
+ai_palette <- report_colors
+report_colors <- rep(report_colors, 10)
+main_color <- "#635bff"
+secondary_color <- "#ff5996"
+
+
+# Define colour and fill scales 
+scale_colour_discrete <- function(...) scale_colour_manual(values = report_colors)
+scale_fill_discrete <- function(...) scale_fill_manual(values = report_colors)
+
+report_font_family <- "Helvetica Neue"
+
+# Define report ggplot theme
+report_ggplot_theme <- function() {
+
+  theme_minimal() +
+    
+  theme(
+    # Panel
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major = element_line(linewidth = 0.25),
+    panel.spacing = unit(1.25, "lines"),
+    panel.background = element_blank(),
+    plot.background = element_rect(fill='#ffffff', color = '#ffffff'),
+    
+    text = element_text(family = report_font_family),
+    
+    # Axis
+    axis.title = element_text(family = report_font_family),
+    axis.text = element_text(family = report_font_family),
+    axis.ticks.x = element_line(),
+    
+    # Legend
+    legend.position = 'bottom',
+    
+    # Facets
+    strip.text = element_text(family = report_font_family, 
+                              face = "bold", hjust = 0, size = 12),
+    # Title
+    plot.title = element_text(family = report_font_family,
+                             face = "bold", hjust = 0, size = 18),
+    plot.subtitle = element_text(family = report_font_family, face = "italic")
+ )
+}
+
+update_geom_defaults("text", list(family = report_font_family))
+update_geom_defaults("label", list(family = report_font_family))
+
+# Set report ggplot theme
+theme_set(report_ggplot_theme())
+```
+
+::: {#intro .section}
+The new AI assistant was launched company-wide eight weeks ago, designed to **accelerate insights, reduce repetitive work, and improve decision-making** across departments.
+
+
+::: columns
+::: {.column width="50%"}
+As the organization scaled, access to data increasingly relied on dashboards that aged quickly and on ad-hoc requests to the Data team that created operational bottlenecks. To address this, the company launched an **AI assistant** designed to enable natural-language querying of core datasets, with the explicit objective of accelerating access to insights while reducing dependency on manual analyst intervention.
+:::
+
+::: {.column width="50%"}
+Eight weeks after launch, the assistant transformed how data is consumed across the organization, from a request-driven model to a more distributed and on-demand one. Answers are now delivered in minutes rather than days and the scale it enables expose ambiguities in business logic. In this sense, the assistant has become both an accelerator and a diagnostic of the organization’s data maturity.
+
+:::
+:::
+:::
+
+::: {.section .section-alt .section-inner}
+## New AI Assistant Exceeded Expectations
+
+<h3>Key results in the first eight weeks after launch</h3>
+
+<div class="metrics">
+
+<div>
+<div class="metric-value">-76%</div>
+<div class="metric-label">Ad-hoc Data Requests</div>
+<div class="metric-note">Most recurring analytical questions are now resolved without direct DS intervention.</div>
+</div>
+
+<div>
+<div class="metric-value">-97%</div>
+<div class="metric-label">Median Time to Answer</div>
+<div class="metric-note">Time-to-insight for common questions compressed from days to minutes.</div>
+</div>
+
+<div>
+<div class="metric-value">2.3x</div>
+<div class="metric-label">Faster Project Delivery</div>
+<div class="metric-note">Teams using the AI assistant consistently ship projects more than twice as fast.</div>
+</div>
+</div>
+
+:::
+
+::: section
+## Fewer Requests, Better Work
+
+<h3>A ~76% reduction is sustained week over week</h3>
+
+::: columns
+::: {.column width="45%"}
+The weekly volume of ad-hoc requests to the Data Science team dropped from an average of **120 requests per week pre-launch to 29 post-launch**, a reduction of **-76%**. More importantly, post-launch variability is low: weekly requests range narrowly between 67 and 72, compared to a wider pre-launch range of **117 to 123**. There is no rebound effect observed over the eight post-launch weeks, suggesting the reduction is not driven by novelty or temporary behavior change.
+
+**The assistant has permanently absorbed a large share of low-complexity demand. This is not deferred work returning through another channel; it is work that no longer needs to exist. The remaining DS requests are structurally different, not just fewer.**
+:::
+
+::: {.column width="55%"}
+
+```{r requests, fig.height=4.5, fig.width=7}
+requests_ww <- data.frame(
+  week = 1:16,
+  period = rep(c("Pre-launch", "Post-launch"), each = 8),
+  requests = c(
+    95, 129, 133, 116, 101, 123, 128, 138,  # pre
+    29, 30, 23, 36, 23, 31, 27, 29    # post
+  )
+)
+
+ggplot(requests_ww, aes(x = week, y = requests, fill = period)) +
+  geom_col(alpha = 0.7) +
+  scale_fill_manual(values = c(main_color, '#e1e1e2')) +
+  geom_segment(x = 0, y = 120, xend = 8, yend = 120,
+               linetype="dashed", size=0.8, color = 'grey40') +
+  annotate("text", x=4, y=125, label="Pre-launch: 120 req on avg", 
+           hjust=0.5, color = 'grey40') +
+  geom_segment(x = 9, y = 29, xend = 16, yend = 29, 
+               linetype="dashed", size=0.8, color = main_color) +
+  annotate("text", x=12, y=34, label="Post-launch: 29 req on avg", 
+           hjust=0.5, color = main_color) +
+  geom_segment(x = 9, y = 120, xend = 9, yend = 32, 
+               size=0.2, color = main_color, arrow = arrow(length = unit(0.1, "inches"))) +
+  annotate("text", x=9, y=85, label="-76%", 
+           hjust=-0.1, color = main_color, size = 8, fontface = "bold") +
+  annotate("text", x=9, y=70, label="Data Requests", 
+           hjust=-0.1, color = main_color, size = 5) +
+  scale_x_continuous(labels = paste('Week', c(-8, -4, -1, 1, 4, 8)), 
+                     breaks = c(1,4,8,9,12,16)) +
+  theme(legend.position = 'none') +
+  labs(
+    title = "Weekly Ad-hoc DS Requests",
+    subtitle = "AI Assistant impacted since day one",
+    x = "",
+    y = "Number of Requests"
+  )  
+```
+
+:::
+:::
+:::
+
+::: section
+
+::: columns
+::: {.column width="33%"}
+
+<h2> Data Scientists Work Has Evolved </h2>
+<h3> From repetitive work to core product support </h3>
+
+Since the launch of the AI assistant, the role of the Data Science team has shifted materially from request-driven execution to leverage-focused work. 
+
+Routine ad-hoc queries and dashboard maintenance, which previously consumed a **large share of analyst time (~90%)**, are now largely absorbed thanks to self-service access. This has reduced interruptions and enabled the team to concentrate on **defining core metrics, building models, supporting experimentation**, and partnering more closely with the business on decisions. 
+
+**Rather than acting as an intermediary that resolves ambiguity on a per-request basis, Data Science increasingly invests in reusable definitions and systems that scale across teams. The net effect is not just faster answers, but a compounding increase in the impact and durability of Data Science work.**
+::: 
+
+::: {.column width="66%" .ds-work}
+```{r dswork, fig.align='right', fig.height=7.6, fig.width=6}
+ds_flow <- data.frame(
+  before = c(
+    "Ad-hoc Queries",
+    "Ad-hoc Queries",
+    "Dashboard \nMaintenance",
+    "Dashboard \nMaintenance",
+    "Modeling \n& Experimentation",
+    "Decision Support"
+  ),
+  after = c(
+    "Defining Core \nMetrics",
+    "Modeling \n& Experimentation",
+    "Modeling \n& Experimentation",
+    "Decision Support",
+    "Modeling \n& Experimentation",
+    "Decision Support"
+  ),
+  pct_time = c(15, 30, 15, 20, 10, 7)
+)
+
+ggplot(ds_flow,
+       aes(axis1 = before,
+           axis2 = after,
+           y = pct_time)) +
+  geom_alluvium(alpha = 0.25, aes(fill = after)) +
+  geom_stratum(width = 0.33, alpha=0.8, aes(fill = after), color = 'white') +
+  geom_text(stat = "stratum",
+            aes(label = paste0(after_stat(stratum), '\n',
+                              round(after_stat(..prop..)*100), '%')), color = 'white', 
+                fontface = 'bold',
+                fontfamily = report_font_family,
+            size = 3.8) +
+  scale_x_discrete(limits = c("Before AI Assistant", "After AI Assistant"),
+                   expand = c(.1, .1)) +
+  labs(
+    title = "Data Science Work Before & After Launch",
+    subtitle = "Data team is now focused on core product tasks, modeling and experimentation",
+    y = "Share of Data Science Time (%)",
+    x = ""
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid.major = element_blank(),
+    legend.position = 'none'
+  )
+```
+::: 
+::: 
+:::
+
+::: section 
+
+## Speed Is the Real Breakthrough {#speed}
+
+<h3>75% of queries are solved in under one hour</h3>
+
+Pre-launch, time to answer through the DS team shows a heavy-tailed distribution with a **median of ~1,252 minutes (~20 hours)** and a long right tail extending into multiple days. Post-launch, the assistant compresses the distribution sharply: the **median drops to ~35 minutes**, with over **75% of queries answered in under one hour**. The overlap between the two distributions is minimal, even on a log scale.
+
+```{r dist, fig.align='center', fig.width=9}
+set.seed(42)
+
+tta_dist <- data.frame(
+  time = c(
+    rgamma(500, shape = 2, scale = 800),  # DS team
+    rgamma(500, shape = 2, scale = 20)    # Assistant
+  ),
+  channel = rep(c("DS Team", "AI Assistant"), each = 500)
+)
+
+medians <- aggregate(time ~ channel, tta_dist, median)
+
+ggplot(tta_dist, aes(x = time, fill = channel)) +
+  geom_density(alpha = 0.4, color = "white") +
+  
+  # Median lines
+  geom_vline(
+    data = medians,
+    aes(xintercept = time, color = channel),
+    size = 0.25,
+    lty = 'dashed'
+  ) +
+  
+  # Median value annotations
+  geom_text(
+    data = medians,
+    aes(
+      x = time,
+      y = 0.015,
+      label = paste0("Median: ", round(time), " min"),
+      color = channel,
+      fontfamily = report_font_family
+    ),
+    angle = 90,
+    vjust = -0.4,
+    hjust = -0.2,
+    size = 3.5,
+    show.legend = FALSE
+  ) +
+  
+  # Distribution annotations
+  annotate(
+    "text",
+    x = 1200,
+    y = 1,
+    label = "Before AI",
+    color = "grey",
+    fontfamily = report_font_family,
+    fontface = 'bold',
+    size = 4,
+    hjust = 1,
+    vjust = 1
+  ) +
+  annotate(
+    "text",
+    x = 25,
+    y = 1,
+    label = "After AI",
+    color = main_color,
+    fontfamily = report_font_family,
+    fontface = 'bold',
+    size = 4,
+    hjust = 1,
+    vjust = 1
+  ) +
+  geom_segment(x = log10(1000), y = 0.6, xend = log10(50), yend = 0.6, 
+               size = 0.25, color = main_color, 
+               arrow = arrow(length = unit(0.1, "inches"))) +
+  annotate("text", x=250, y=0.8, label="-97%", 
+           hjust=0.5, color = main_color, size = 8, fontface = "bold") +
+  annotate("text", x=250, y=0.7, label="Time-to-answer down", 
+           hjust=0.5, color = main_color) +
+  scale_x_log10(limits = c(1, 50000)) +
+  scale_fill_manual(values = c(main_color, "grey")) +
+  scale_color_manual(values = c(main_color, "grey")) +
+  labs(
+    title = "Distribution of Time to Answer",
+    subtitle = "The AI assistant shifts answers from days to minutes",
+    x = "Time to Answer (minutes, log scale)",
+    y = "Density"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    legend.position = "none"
+  )
+```
+
+
+**This is not an incremental efficiency gain. The assistant removes an entire order of magnitude from the response time distribution. As a result, data is no longer consumed in scheduled review cycles but increasingly in real-time decision contexts.**
+
+:::
+
+::: columns
+::: {.column width="33%"}
+
+<h2> AI Usage Leads To Higher Throughput </h2>
+
+<h3>Teams using the AI assistant deliver more projects</h3>
+
+Across the organization, **AI usage is strongly correlated with delivery throughput**. Quantitatively, every additional **10 AI queries per user per month is associated with ~1.6 additional projects delivered per quarter**, controlling for department. Teams in the top quartile of AI usage deliver **2.1× more projects** than low-usage teams. Product and Marketing show the highest absolute throughput, but the positive slope is consistent across all functions, including lower-usage teams such as Finance and Operations.
+
+:::
+
+::: {.column width="66%" .scatter}
+```{r productivity, fig.width=9.5, fig.height=5}
+set.seed(777)
+
+scatter_real <- data.frame(
+  ai_usage = c(
+    rpois(25, 22),   # Product
+    rpois(18, 17),   # Marketing
+    rpois(12, 12),   # Sales
+    rpois(8, 8),     # Finance
+    rpois(5, 4)      # Operations
+  ),
+  department = c(
+    rep("Product", 25),
+    rep("Marketing", 18),
+    rep("Sales", 12),
+    rep("Finance", 8),
+    rep("Operations", 5)
+  )
+)
+
+scatter_real$projects_delivered <- with(scatter_real,
+  1.5 +
+    0.18 * ai_usage +
+    ifelse(department == "Product", 1.2,
+    ifelse(department == "Marketing", 0.8,
+    ifelse(department == "Sales", 0.4,
+    ifelse(department == "Finance", 0.2, 0)))) +
+    rnorm(nrow(scatter_real), 0, 0.4)
+)
+
+p0 <- ggplot(
+  scatter_real,
+  aes(x = ai_usage,
+      y = projects_delivered,
+      color = department)
+) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(
+    aes(group = 1),
+    method = "lm",
+    se = FALSE,
+    color = "black",
+    linetype = "dashed",
+    size = 0.5
+  ) +
+  labs(
+    title = "AI Usage vs Project Delivery",
+    subtitle = "Higher AI usage is associated with higher delivery",
+    x = "AI Queries per User (Monthly)",
+    y = "Projects Delivered per Quarter",
+    color = ""
+  )
+
+p1 <- ggplot(
+  scatter_real,
+  aes(x = ai_usage,
+      y = projects_delivered,
+      color = department)
+) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(
+    aes(group = department, color = department),
+    method = "lm",
+    se = FALSE,
+    linetype = "dashed",
+    size = 0.5
+  ) +
+  facet_wrap("department", scales = "free") +
+  theme(legend.position = "none") +
+  labs(
+    #title = "AI Usage vs Delivery, by Department",
+    subtitle = "The relationship holds across teams, with different baselines",
+    x = "AI Queries per User (Monthly)",
+    y = "Projects Delivered per Quarter"
+  )
+
+p0 + p1
+```
+:::
+:::
+
+**Crucially, this relationship reflects productivity gains, not just speed or convenience. Users are able to validate assumptions independently, unblock themselves earlier, and reduce back-and-forth with Data Science. The assistant shifts effort from coordination and clarification toward execution. As a result, work moves forward continuously instead of batching around analyst availability.**
+
+::: columns
+::: {.column width="30%"}
+
+<h4>Teams Are Not Just Delivering More, But Also Faster</h4>
+
+Teams using the AI assistant regularly deliver projects **2.3× faster** than before launch, driven by shorter analysis cycles, fewer clarification loops, and earlier detection of data issues. Importantly, this acceleration compounds with usage: teams that integrate the assistant into weekly workflows see sustained gains, while sporadic users plateau quickly.
+:::
+::: {.column width="70%" .delivery}
+```{r delivery, fig.dim=c(8,2), fig.align='center'}
+delivery_speed <- data.frame(
+  Segment = factor(
+    c("Before AI", "After AI"),
+    levels = c("Before AI", "After AI")
+  ),
+  SpeedIndex = c(1.0, 2.3),
+  Highlight = c("Baseline", "AI")
+)
+
+ggplot(delivery_speed, aes(x = 0, y = Segment, color = Highlight)) +
+  geom_segment(
+    lineend = "round",
+    linewidth = 7,
+    aes(xend = SpeedIndex, yend = Segment)
+  ) +
+  geom_text(
+    data = subset(delivery_speed, Highlight == "AI"),
+    aes(label = "2.3×", y = Segment, x = SpeedIndex),
+    size = 8,
+    hjust = -0.25,
+    color = main_color,
+    fontface = "bold",
+    family = report_font_family
+  ) +
+  scale_color_manual(
+    values = c(
+      "Baseline" = "grey",
+      "AI" = main_color
+    )
+  ) +
+  scale_x_continuous(
+    limits = c(0, 2.7),
+    breaks = NULL
+  ) +
+  labs(
+    title = "Project Delivery Speed After AI Assistant Adoption",
+    subtitle = "Teams move from analysis bottlenecks to continuous execution",
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    legend.position = "none",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.x = element_blank()
+  )
+```
+:::
+:::
+
+**The assistant does not merely make teams faster at the same work, it changes the shape of delivery. Projects move with fewer handoffs, decisions are made earlier, and Data Science capacity is applied where it has the highest leverage. Productivity gains are therefore structural, not temporary, and scale with both adoption and semantic maturity.**
+
+::: {.section .section-alt .section-inner}
+# What's Next?
+
+::: cards
+::: card
+<h2>1</h2>
+
+<h3>Harden the Semantic Layer as a Key Asset</h3>
+
+<p>The productivity gains observed are contingent on consistent definitions. Invest in canonical metrics, versioned logic, and ownership to prevent fragmentation as usage scales.</p>
+:::
+
+::: card
+<h2>2</h2>
+
+<h3>Actively Enable Low-Adoption Teams</h3>
+
+<p>Finance and Operations show clear upside but lag in usage. Target these teams with practical examples, templates, and guided workflows tied to real delivery outcomes.</p>
+:::
+
+::: card
+<h2>3</h2>
+
+<h3>Establish a Feedback Loop on Delivery</h3>
+
+<p>Use high-impact queries and delivery blockers to continuously refine prompts, defaults, and semantic coverage. The assistant should evolve with how teams actually ship work.</p>
+:::
+:::
+:::
+
+## Conclusions {#closing}
+
+**Before the launch, data access was slow, centralized, and mediated through the Data Science team, which masked inconsistencies and absorbed ambiguity at the cost of speed and scalability. After the launch, access is faster, more distributed, and increasingly self-service, but also less forgiving of unclear definitions. The AI assistant has reduced operational load and accelerated decision cycles while simultaneously exposing the organization’s weakest data foundations. In effect, it has shifted the limiting factor from analyst capacity to semantic clarity.**
