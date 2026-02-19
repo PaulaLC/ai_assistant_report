@@ -6,8 +6,6 @@ The report is designed as an **example for a POSIT Conference 2026 talk**. It fo
 
 All data used in the report is **synthetic** and created solely for illustrative purposes.
 
----
-
 ## What This Report Demonstrates
 
 The report shows how to:
@@ -23,8 +21,6 @@ Key themes include:
 * Compression of time-to-insight
 * Faster project delivery
 * Shifts in how Data Science teams spend their time
-
----
 
 ## Repository Structure
 
@@ -47,8 +43,6 @@ The main Quarto document. It includes:
 
 The report is rendered as **HTML** and uses Quarto’s layout system without custom grids.
 
----
-
 ### `footer.html`
 
 A lightweight HTML footer injected at render time that:
@@ -59,8 +53,6 @@ A lightweight HTML footer injected at render time that:
 
 The footer is included via `include-after-body` in the Quarto configuration.
 
----
-
 ### `report_style.css`
 
 Custom CSS used to:
@@ -69,8 +61,6 @@ Custom CSS used to:
 * Style highlighted sections and metric blocks
 * Preserve Quarto’s underlying layout and grid system
 * Support a clean, executive-friendly visual style
-
----
 
 ## How to Render the Report
 
@@ -104,15 +94,11 @@ quarto render ai_assistant_report.qmd
 
 This will generate an HTML report using the provided CSS and footer.
 
----
-
 ## Notes on Scope and Intent
 
 * This report is **not** a benchmark, product evaluation, or real company case study
 * Metrics, trends, and distributions are **synthetic**
 * The purpose is to demonstrate **how to structure and communicate impact**, not to validate a specific tool or implementation
-
----
 
 ## Attribution
 
