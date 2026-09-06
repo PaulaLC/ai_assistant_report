@@ -1,0 +1,257 @@
+---
+title: "Analysis"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    code-fold: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+This report analyzes ad-hoc requests received by the Data Science team before and after the launch of an AI assistant. The analysis covers January 1 through April 30, 2026. The AI assistant was launched on March 1, 2026. Two metrics are considered: the number of requests received by Data Science and the time required to answer each request. Request volume is analyzed at a daily level, while time to answer is analyzed at the individual level. The purpose of the analysis is to describe how these metrics changed between the two periods.
+
+# Data
+
+The analysis is based on data collected between January 1 and April 30, 2026. The dataset contains information about ad-hoc requests submitted to the Data Science team during this period. Each request represents an individual interaction with the Data Science team. The data contain two main measures. The date on which the request was received and the elapsed time, in minutes, between receiving a request and providing an answer. A separate daily dataset is used to analyze request volume. This dataset contains one observation per calendar day and includes the total number of requests received on that day. The request-level dataset contains one observation per individual request and is used to analyze the distribution of time to answer. The AI assistant was launched on March 1, 2026.
+
+## Dataset structure
+
+The daily dataset contains one observation for each date in the analysis period.
+
+```{r}
+# setup
+library(tidyverse)
+library(scales)
+library(lubridate)
+
+set.seed(123)
+
+launch_date <- as.Date("2026-03-01")
+
+dates <- seq(
+  as.Date("2026-01-01"),
+  as.Date("2026-04-30"),
+  by = "day"
+)
+
+# Weekly seasonality
+weekday_effect <- c(
+  "Monday"    = 1.20,
+  "Tuesday"   = 1.25,
+  "Wednesday" = 1.20,
+  "Thursday"  = 1.15,
+  "Friday"    = 0.90,
+  "Saturday"  = 0.15,
+  "Sunday"    = 0.15
+)
+
+mean_weekday_effect <- mean(weekday_effect)
+
+# Daily request data
+data_daily <- tibble(
+  date = dates
+) %>%
+  mutate(
+    period = if_else(
+      date < launch_date,
+      "Before AI",
+      "After AI"
+    ),
+
+    weekday = weekdays(date),
+
+    seasonality = weekday_effect[weekday],
+
+    expected_daily_requests = if_else(
+      period == "Before AI",
+      120 / 7 *
+        seasonality /
+        mean_weekday_effect,
+      29 / 7 *
+        seasonality /
+        mean_weekday_effect
+    ),
+
+    requests = rpois(
+      n(),
+      expected_daily_requests
+    )
+  )
+
+# Individual request data
+data_requests <- data_daily %>%
+  select(
+    date,
+    period,
+    requests
+  ) %>%
+  uncount(
+    requests,
+    .id = "request_number"
+  ) %>%
+  group_by(period) %>%
+  mutate(
+    raw_time_to_answer = case_when(
+
+      period == "Before AI" ~
+        exp(
+          rnorm(
+            n(),
+            mean = log(1252),
+            sd = 1.15
+          )
+        ),
+
+      period == "After AI" ~
+        exp(
+          rnorm(
+            n(),
+            mean = log(35),
+            sd = 0.48
+          )
+        )
+    ),
+
+    target_median = if_else(
+      period == "Before AI",
+      1252,
+      35
+    ),
+
+    time_to_answer_minutes =
+      raw_time_to_answer *
+      target_median /
+      median(raw_time_to_answer)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    time_to_answer_minutes =
+      round(time_to_answer_minutes, 1),
+
+    request_id = row_number()
+  ) %>%
+  select(
+    request_id,
+    date,
+    period,
+    time_to_answer_minutes
+  )
+
+summary(data_daily)
+```
+
+## Missing values
+
+Missing values were checked for all variables used in the analysis.
+
+```{r}
+#| label: missing-values
+
+data_requests %>%
+  summarise(
+    across(
+      everything(),
+      ~ sum(is.na(.))
+    )
+  )
+```
+
+There are no missing values in the variables used for the analysis.
+
+
+# Analysis
+
+## Daily request volume
+
+The first analysis looks at the number of Data Science requests received each day. 
+
+
+```{r}
+#| label: daily-volume
+#| fig-width: 14
+#| fig-height: 4
+
+ggplot(
+  data_daily,
+  aes(
+    x = date,
+    y = requests
+  )
+) +
+  geom_line(
+    linewidth = 0.5,
+    lty = 'dashed'
+  ) +
+  scale_x_date(
+    date_breaks = "2 days",
+    expand = c(0, 0)
+  ) +
+  labs(
+    title = "",
+    x = "",
+    y = ""
+  ) +
+  theme(
+    axis.text.x = element_text(
+      angle = 90,
+      hjust = 1,
+      size = 5
+    ),
+    axis.title = element_text(
+      size = 9
+    ),
+    plot.title = element_text(
+      size = 12
+    )
+  )
+```
+
+
+The daily series in figure 1, shows considerable variation from one day to another. There is also a visible weekly pattern. Request activity is higher during working days and substantially lower during weekends. The level of the series appears to be higher before the launch and lower after the launch. Before March 1, daily request volume is frequently in the range of approximately 15 to 25 requests. After March 1, daily request volume is generally much lower. The daily chart therefore suggests that request volume changed following the launch.
+
+
+## Time to answer
+
+The second metric considered in this analysis is the time required to answer each individual request. Time is measured in minutes. The distribution of response time is expected to be highly skewed because requests can be answered relatively quickly but can also remain unresolved for many hours or several days. For this reason, the median is included in addition to the mean. First weeks of the period analyzed, median is approximately between 1,500 minutes and 2,500. The weeks after, median goes down to 34 to 44 minutes of time.
+
+### Distribution of time to answer
+
+The response-time distribution can be visualized using histograms.
+
+```{r}
+#| label: response-histogram
+#| fig-width: 9
+#| fig-height: 5
+
+ggplot(
+  data_requests,
+  aes(
+    x = time_to_answer_minutes
+  )
+) +
+  geom_histogram(
+    bins = 50
+  ) +
+  facet_wrap(
+    ~ period,
+    scales = "free"
+  ) +
+  labs(
+    title = "Distribution of time to answer",
+    x = "Time to answer (minutes)",
+    y = "Requests"
+  ) +
+  theme_minimal()
+```
+
+The pre-launch distribution is strongly right-skewed. A large proportion of requests require many hundreds of minutes before receiving an answer. There is also a long right tail. Some requests take substantially longer than the median, extending into multiple days. This type of distribution makes the mean difficult to interpret as a measure of a typical request. For example, a small number of very long-running requests can have a large effect on the arithmetic mean. The median is less affected by these extreme observations and therefore provides a useful measure of the typical response time. The post-launch distribution is concentrated much closer to the lower end of the scale. Most requests are answered within a relatively short amount of time.
+
+# Results
+
+The analysis shows substantial differences in both request volume and time to answer between the pre-launch and post-launch periods. Daily request volume decreases after launch and the time to answer also changes substantially. The post-launch distribution is considerably more concentrated around shorter response times than the pre-launch distribution. These results describe an important change in both the volume of requests reaching Data Science and the time required to answer those requests.
+
+
+_This report is a demonstration example prepared for the POSIT Conference 2026. © 2026 Paula LC_
