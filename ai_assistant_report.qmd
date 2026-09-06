@@ -4,6 +4,7 @@ subtitle: "How AI reshaped productivity, delivery speed, and the role of Data Sc
 page-layout: full
 format:
   html:
+    embed-resources: true
     anchor-sections: false
     css: report_style.css
     mainfont: 'Helvetica Neue'
@@ -79,7 +80,7 @@ theme_set(report_ggplot_theme())
 ```
 
 ::: {#intro .section}
-The new AI assistant was launched company-wide eight weeks ago, designed to **accelerate insights, reduce repetitive work, and improve decision-making** across departments.
+The new AI assistant was launched company-wide eight weeks ago, designed to **accelerate insights, reduce repetitive work, and improve decision-making**.
 
 
 ::: columns
@@ -348,101 +349,6 @@ ggplot(tta_dist, aes(x = time, fill = channel)) +
 **This is not an incremental efficiency gain. The assistant removes an entire order of magnitude from the response time distribution. As a result, data is no longer consumed in scheduled review cycles but increasingly in real-time decision contexts.**
 
 :::
-
-::: columns
-::: {.column width="33%"}
-
-<h2> AI Usage Leads To Higher Throughput </h2>
-
-<h3>Teams using the AI assistant deliver more projects</h3>
-
-Across the organization, **AI usage is strongly correlated with delivery throughput**. Quantitatively, every additional **10 AI queries per user per month is associated with ~1.6 additional projects delivered per quarter**, controlling for department. Teams in the top quartile of AI usage deliver **2.1× more projects** than low-usage teams. Product and Marketing show the highest absolute throughput, but the positive slope is consistent across all functions, including lower-usage teams such as Finance and Operations.
-
-:::
-
-::: {.column width="66%" .scatter}
-```{r productivity, fig.width=9.5, fig.height=5}
-set.seed(777)
-
-scatter_real <- data.frame(
-  ai_usage = c(
-    rpois(25, 22),   # Product
-    rpois(18, 17),   # Marketing
-    rpois(12, 12),   # Sales
-    rpois(8, 8),     # Finance
-    rpois(5, 4)      # Operations
-  ),
-  department = c(
-    rep("Product", 25),
-    rep("Marketing", 18),
-    rep("Sales", 12),
-    rep("Finance", 8),
-    rep("Operations", 5)
-  )
-)
-
-scatter_real$projects_delivered <- with(scatter_real,
-  1.5 +
-    0.18 * ai_usage +
-    ifelse(department == "Product", 1.2,
-    ifelse(department == "Marketing", 0.8,
-    ifelse(department == "Sales", 0.4,
-    ifelse(department == "Finance", 0.2, 0)))) +
-    rnorm(nrow(scatter_real), 0, 0.4)
-)
-
-p0 <- ggplot(
-  scatter_real,
-  aes(x = ai_usage,
-      y = projects_delivered,
-      color = department)
-) +
-  geom_point(alpha = 0.7) +
-  geom_smooth(
-    aes(group = 1),
-    method = "lm",
-    se = FALSE,
-    color = "black",
-    linetype = "dashed",
-    size = 0.5
-  ) +
-  labs(
-    title = "AI Usage vs Project Delivery",
-    subtitle = "Higher AI usage is associated with higher delivery",
-    x = "AI Queries per User (Monthly)",
-    y = "Projects Delivered per Quarter",
-    color = ""
-  )
-
-p1 <- ggplot(
-  scatter_real,
-  aes(x = ai_usage,
-      y = projects_delivered,
-      color = department)
-) +
-  geom_point(alpha = 0.7) +
-  geom_smooth(
-    aes(group = department, color = department),
-    method = "lm",
-    se = FALSE,
-    linetype = "dashed",
-    size = 0.5
-  ) +
-  facet_wrap("department", scales = "free") +
-  theme(legend.position = "none") +
-  labs(
-    #title = "AI Usage vs Delivery, by Department",
-    subtitle = "The relationship holds across teams, with different baselines",
-    x = "AI Queries per User (Monthly)",
-    y = "Projects Delivered per Quarter"
-  )
-
-p0 + p1
-```
-:::
-:::
-
-**Crucially, this relationship reflects productivity gains, not just speed or convenience. Users are able to validate assumptions independently, unblock themselves earlier, and reduce back-and-forth with Data Science. The assistant shifts effort from coordination and clarification toward execution. As a result, work moves forward continuously instead of batching around analyst availability.**
 
 ::: columns
 ::: {.column width="30%"}
