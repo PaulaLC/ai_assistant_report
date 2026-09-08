@@ -443,4 +443,10 @@ ggplot(delivery_speed, aes(x = 0, y = Segment, color = Highlight)) +
 
 ## Conclusions {#closing}
 
-**Before the launch, data access was slow, centralized, and mediated through the Data Science team, which masked inconsistencies and absorbed ambiguity at the cost of speed and scalability. After the launch, access is faster, more distributed, and increasingly self-service, but also less forgiving of unclear definitions. The AI assistant has reduced operational load and accelerated decision cycles while simultaneously exposing the organization’s weakest data foundations. In effect, it has shifted the limiting factor from analyst capacity to semantic clarity.**
+**Before the launch, data access was slow, centralized, and mediated through Data Science, absorbing ambiguity at the cost of speed and scalability. In the first eight weeks after launch, ad-hoc requests fell by 76%, while median time to answer dropped by 97%, from roughly 20 hours to 35 minutes. Teams using the AI assistant also delivered projects 2.3× faster, suggesting that its impact extends beyond reducing analyst workload to accelerating decision-making across the organization. At the same time, faster and more distributed access has exposed inconsistencies and made unclear data definitions harder to hide. The assistant has therefore reduced operational load while revealing weaknesses in the organization’s data foundations. The bottleneck has shifted from analyst capacity to semantic clarity.**
+
+---
+
+
+**Let’s connect! 👋 **
+Paula LC | Lead Data Scientist | Product Analytics |  [linkedin.com/in/paulalc](www.linkedin.com/in/paulalc)
